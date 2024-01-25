@@ -9,7 +9,7 @@ char tempChars[BUFFER_SIZE]{}; // Temp array for parseData()
 // Fixed-size integer types to ensure consistency across different
 // platforms.
 uint32_t intVal {};  // Receive from ROS for checksum verification
-float floatVal {}; // Convert intVal to float
+float floatVal {};   // Convert intVal to float
 uint8_t receivedChecksum {};
 bool newData = false;
 
