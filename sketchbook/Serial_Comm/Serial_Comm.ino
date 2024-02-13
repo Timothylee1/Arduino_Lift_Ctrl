@@ -24,7 +24,7 @@ void setup()
 }
 
 /**
-   @brief Main loop that receives, parses, and processes incoming data.
+   @brief Main loop that receives, parses, and processes incoming data. 
 
 */
 void loop() {
