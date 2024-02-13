@@ -2,9 +2,9 @@
 const byte BUFFER_SIZE = 100;
 
 /* Variables */
-char msgType[20]{};
-char receivedChars[BUFFER_SIZE]{};
-char tempChars[BUFFER_SIZE]{}; // Temp array for parseData()
+char msgType[20] {};
+char receivedChars[BUFFER_SIZE] {};
+char tempChars[BUFFER_SIZE] {}; // Temp array for parseData()
 
 // Fixed-size integer types to ensure consistency across different
 // platforms.
@@ -24,10 +24,14 @@ void setup()
 }
 
 /**
- * @brief Main loop that receives, parses, and processes incoming data.
- * 
- */
+   @brief Main loop that receives, parses, and processes incoming data.
+
+*/
 void loop() {
+  
+//  char data;
+//    data = Serial.read();
+//    Serial.write(data);
   recvWithStartEndMarkers();
   // Input should be "<Message_type, floatVal, uint_Checksum>"
   if (newData == true) {
@@ -45,18 +49,16 @@ void loop() {
         digitalWrite(LED_BUILTIN, LOW);  // Turn the LED off
         delay(200);
 
-        // Simulate feedback, might change to a callback, where if x increment
-        // reached send feedback (not sure if possible)
-        char arr[BUFFER_SIZE]{};
+        char arr[BUFFER_SIZE] {};
         char feedback[9] = "Feedback";
         formatMsg(feedback, floatVal, arr);
         Serial.write(arr);
         delay(200);
       }
     } else if (strstr(msgType, "Feedback")) {
-      char arr[BUFFER_SIZE]{};
+      char arr[BUFFER_SIZE] {};
       char feedback[9] = "Feedback";
-      formatMsg(feedback, floatVal, arr);
+      formatMsg(feedback, floatVal, arr); // replace floatVal with current position
       Serial.write(arr);
       delay(200);
     } else {
@@ -67,13 +69,13 @@ void loop() {
 }
 
 /**
- * @brief Reads incoming serial data until the end marker is reached.
- *        Non blocking read. Only extracts data between the startMarker
- *        and endMarker.
- *        
- * @param None
- * @return None
- */
+   @brief Reads incoming serial data until the end marker is reached.
+          Non blocking read. Only extracts data between the startMarker
+          and endMarker.
+
+   @param None
+   @return None
+*/
 void recvWithStartEndMarkers(void) {
   static bool recvInProgress = false;
   static byte idx{};
@@ -83,7 +85,7 @@ void recvWithStartEndMarkers(void) {
 
   while (Serial.available() && newData == false) {
     data = Serial.read();
-
+//    Serial.println(data);
     if (recvInProgress == true) {
       if (data != endMarker) {
         receivedChars[idx++] = data;
@@ -103,12 +105,12 @@ void recvWithStartEndMarkers(void) {
 }
 
 /**
- * @brief Parses the received data into msgType, intVal, floatVal, 
- *        and receivedChecksum.
- * 
- * @param None
- * @return None
- */
+   @brief Parses the received data into msgType, intVal, floatVal,
+          and receivedChecksum.
+
+   @param None
+   @return None
+*/
 void parseData(void) {
   char* strtokIdx;  // this is used by strtok() as an index
 
@@ -123,25 +125,25 @@ void parseData(void) {
   floatVal = float(intVal) / 100;  // Convert to float for use
 
   // this continues where the previous call left off
-  strtokIdx = strtok(NULL, ",");  
+  strtokIdx = strtok(NULL, ",");
   receivedChecksum = atoi(strtokIdx); // convert to an integer
 }
 
 /**
- * @brief Formats the output message.
- * 
- * @param type: The message type. "Goal", "Feedback", etc
- * @param val: The value to be included in the message.
- * @param arr: The array to store the formatted message.
- * @return None
- */
+   @brief Formats the output message.
+
+   @param type: The message type. "Goal", "Feedback", etc
+   @param val: The value to be included in the message.
+   @param arr: The array to store the formatted message.
+   @return None
+*/
 void formatMsg(char* type, const float val, char* arr) {
   arr[0] = '<';
   for (int i = 1; i <= strlen(type); ++i) {
     arr[i] = type[i - 1];
   }
   snprintf(arr + strlen(arr), BUFFER_SIZE - strlen(arr), ", ");
-  
+
   // (value, min_width, digit after decimal, store)
   dtostrf(val, 6, 2, arr + strlen(arr));
   snprintf(arr + strlen(arr), BUFFER_SIZE - strlen(arr), ", %u>\n",
@@ -149,12 +151,12 @@ void formatMsg(char* type, const float val, char* arr) {
 }
 
 /**
- * @brief Calculates the checksum for the given data.Uses Cyclic 
- *        Rredundancy Check 8 (CRC-8), 9 bit polynomial length.
- *         
- * @param data: The data to calculate the checksum.
- * @return The calculated checksum.
- */
+   @brief Calculates the checksum for the given data.Uses Cyclic
+          Rredundancy Check 8 (CRC-8), 9 bit polynomial length.
+
+   @param data: The data to calculate the checksum.
+   @return The calculated checksum.
+*/
 inline uint8_t calcCRC(const uint32_t data) {
   // Calculate checksum
   const uint8_t* bytes = reinterpret_cast<const uint8_t*>(&data);
