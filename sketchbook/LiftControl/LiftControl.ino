@@ -101,14 +101,26 @@ void Operating(const uint8_t *buf) {
     Serial.write(liftBuf[msg.state.id], BUFFER_SIZE);
     delay(10);
   } else {
-    for (uint8_t i{}; i <= buf[4]; ++i) {  // Pos not reached
+    // Include condition for increment and decrement
+    if (buf[4] < liftBuf[msg.state.id][4]) {  // Pos not reached
       // Execute movement
 
       // Update pos
-      msg.state.position = i;
+      msg.state.position = buf[4];
       EncodeLiftMessage(&msg, sendBuf);
       Serial.write(sendBuf, BUFFER_SIZE);
       delay(10);
+    } else {
+      for (uint8_t i{liftBuf[msg.state.id][4]}; i <= buf[4];
+           ++i) {  // Pos not reached
+        // Execute movement
+
+        // Update pos
+        msg.state.position = i;
+        EncodeLiftMessage(&msg, sendBuf);
+        Serial.write(sendBuf, BUFFER_SIZE);
+        delay(10);
+      }
     }
     // Store state into respective liftBuf[id]
     EncodeLiftMessage(&msg, &(liftBuf[msg.state.id][0]));
