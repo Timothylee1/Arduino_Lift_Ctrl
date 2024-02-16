@@ -1,10 +1,9 @@
 /* Constants */
-const uint8_t BUFFER_SIZE = 7;
-const uint8_t StateFeedback = 0;
-const uint8_t StateRequest = 250;
-const uint8_t NumOfLift = 2;
-static const uint8_t FRAME_SOF1 = 0x55;
-static const uint8_t FRAME_SOF2 = 0x54;
+#define NumOfLift 2
+#define BUFFER_SIZE 7
+#define FRAME_SOF1 0x55
+#define FRAME_SOF2 0x54
+#define StateRequest 250
 
 /* Variables */
 uint8_t recBuf[BUFFER_SIZE]{};
@@ -97,11 +96,11 @@ void Operating(const uint8_t *buf) {
   // Request for status or execution of movement
   if (buf[4] == StateRequest) {
     // May have to receive pos from external and encode again
-    // as reconnecting serial resets the Arduino
+    // as reconnecting serial resets the Arduino;
+    // maybe, initialise liftBuf with the states at the start
     Serial.write(liftBuf[msg.state.id], BUFFER_SIZE);
     delay(10);
   } else {
-    // Include condition for increment and decrement
     if (buf[4] < liftBuf[msg.state.id][4]) {  // Pos not reached
       // Execute movement
 
